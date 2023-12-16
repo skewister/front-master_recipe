@@ -1,4 +1,4 @@
-export interface tag {
+export interface user {
   id: number;
   name: string;
   speciality: string
