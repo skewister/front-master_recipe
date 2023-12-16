@@ -1,1 +1,21 @@
-<p>login works!</p>
+<!-- login.component.html -->
+<div class="login-container">
+  <form (ngSubmit)="onSubmit(loginForm)" #loginForm="ngForm">
+    <div>
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" [(ngModel)]="loginData.email" required>
+    </div>
+    <div>
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" [(ngModel)]="loginData.password" required>
+    </div>
+    <!-- login.component.html -->
+    <div *ngIf="errorMessage" class="alert alert-danger">
+      {{ errorMessage }}
+    </div>
+    <button type="submit" [disabled]="!loginForm.valid">Login</button>
+
+    <button (click)="signInWithGoogle()">Se connecter avec Google</button>
+
+  </form>
+</div>

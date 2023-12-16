@@ -1,3 +1,5 @@
+import {Ingredient} from "./ingredient";
+
 export interface Recipe {
   id: number;
   user_id: number;
@@ -8,4 +10,5 @@ export interface Recipe {
   difficulty: string;
   image: string;
   video?: string;
+  ingredient: Ingredient[];
 }

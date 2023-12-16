@@ -1,1 +1,29 @@
-<p>register works!</p>
+<!-- register.component.html -->
+<div class="register-container">
+  <form (ngSubmit)="onSubmit(registerForm)" #registerForm="ngForm">
+    <div>
+      <label for="name">Nom:</label>
+      <input type="text" id="name" name="name" [(ngModel)]="registerData.name" required>
+    </div>
+    <div>
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" [(ngModel)]="registerData.email" required>
+    </div>
+    <div>
+      <label for="password">Mot de passe:</label>
+      <input type="password" id="password" name="password" [(ngModel)]="registerData.password" required>
+    </div>
+    <div>
+      <label for="confirmpassword">Confirmer le mot de passe:</label>
+      <input type="password" id="confirmpassword" name="confirmpassword" [(ngModel)]="registerData.confirmpassword" required>
+    </div>
+    <!-- login.component.html -->
+    <div *ngIf="errorMessage" class="alert alert-danger">
+      {{ errorMessage }}
+    </div>
+    <button type="submit" [disabled]="!registerForm.valid">S'inscrire</button>
+  </form>
+
+  <button (click)="signInWithGoogle()">Se connecter avec Google</button>
+
+</div>
