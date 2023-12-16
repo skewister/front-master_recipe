@@ -1,0 +1,23 @@
+<form [formGroup]="recipeForm" (ngSubmit)="onSubmitRecipe()" class="space-y-4">
+  <div class="mb-4">
+    <input formControlName="title" placeholder="Titre de la recette" class="p-2 border border-gray-300 rounded w-full">
+    <textarea formControlName="description" placeholder="Description de la recette" class="mt-2 p-2 border border-gray-300 rounded w-full"></textarea>
+  </div>
+
+  <div formArrayName="steps" class="space-y-4">
+    <div *ngFor="let step of steps.controls; let i = index; trackBy: trackByIndex" [formGroupName]="i" class="border border-gray-300 rounded-lg p-4">
+      <div class="step-header cursor-pointer bg-blue-500 text-white p-2 mb-2" (click)="toggleStepCollapse(i)">
+        Étape {{ i + 1 }}
+      </div>
+      <div class="step-content" *ngIf="!step.get('isCollapsed')?.value">
+        <input formControlName="description" placeholder="Description de l'étape" class="p-2 border border-gray-300 rounded w-full">
+        <input formControlName="step_number" [disabled]="true" hidden>
+        <input type="file" formControlName="video" placeholder="Vidéo de l'étape" class="mt-2 p-2 border border-gray-300 rounded w-full">
+        <button type="button" *ngIf="recipeId" (click)="deleteStep(step.value.id)" class="mt-2 bg-red-500 text-white py-2 px-4 rounded">Supprimer cette étape</button>
+      </div>
+    </div>
+    <button type="button" (click)="addStep()" class="bg-green-500 text-white py-2 px-4 rounded">Ajouter une étape</button>
+  </div>
+
+  <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded">Créer la recette</button>
+</form>
