@@ -4,6 +4,22 @@
     <textarea formControlName="description" placeholder="Description de la recette" class="mt-2 p-2 border border-gray-300 rounded w-full"></textarea>
   </div>
 
+  <!-- Pour les tags de difficulté -->
+  <h2>Difficulté</h2>
+  <div *ngFor="let tag of difficultyTags" >
+    <input type="radio" [value]="tag.id" formControlName="difficulty" name="difficulty">{{ tag.name }}
+  </div>
+  <!-- Pour les tags de temps de préparation -->
+  <h2>Temps de préparation</h2>
+  <div *ngFor="let tag of prepTimeTags" >
+    <input type="radio" [value]="tag.id" formControlName="prepTime" name="prepTime">{{ tag.name }}
+  </div>
+  <!-- Pour les tags de temps de cuisson -->
+  <h2>Temps de cuisson</h2>
+  <div *ngFor="let tag of cookTimeTags" >
+    <input type="radio" [value]="tag.id" formControlName="cookTime" name="cookTime">{{ tag.name }}
+  </div>
+
   <div formArrayName="steps" class="space-y-4">
     <div *ngFor="let step of steps.controls; let i = index; trackBy: trackByIndex" [formGroupName]="i" class="border border-gray-300 rounded-lg p-4">
       <div class="step-header cursor-pointer bg-blue-500 text-white p-2 mb-2" (click)="toggleStepCollapse(i)">
@@ -12,7 +28,7 @@
       <div class="step-content" *ngIf="!step.get('isCollapsed')?.value">
         <input formControlName="description" placeholder="Description de l'étape" class="p-2 border border-gray-300 rounded w-full">
         <input formControlName="step_number" [disabled]="true" hidden>
-        <input type="file" formControlName="video" placeholder="Vidéo de l'étape" class="mt-2 p-2 border border-gray-300 rounded w-full">
+        <input type="file" formControlName="file" placeholder="Vidéo de l'étape" class="mt-2 p-2 border border-gray-300 rounded w-full">
         <button type="button" *ngIf="recipeId" (click)="deleteStep(step.value.id)" class="mt-2 bg-red-500 text-white py-2 px-4 rounded">Supprimer cette étape</button>
       </div>
     </div>

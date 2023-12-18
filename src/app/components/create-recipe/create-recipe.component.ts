@@ -1,9 +1,10 @@
-import { Component, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
 import {NgIf, CommonModule} from '@angular/common';
 import {FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import { RecipeService } from "../../services/recipe.service";
 import { HttpClient } from "@angular/common/http";
-
+import { Observable } from 'rxjs';
+import { TagService } from '../../services/tag.service';
 @Component({
   selector: 'app-create-recipe',
   templateUrl: './create-recipe.component.html',
@@ -16,19 +17,40 @@ import { HttpClient } from "@angular/common/http";
   ],
   styleUrls: ['./create-recipe.component.scss']
 })
-export class CreateRecipeComponent {
+export class CreateRecipeComponent implements OnInit {
   recipeForm: FormGroup;
   recipeId: number | undefined;
+  difficultyTags: any[] = [];
+  cookTimeTags: any[] = [];
+  prepTimeTags: any[] = [];
 
   constructor(
     private fb: FormBuilder,
     private recipeService: RecipeService,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private TagService: TagService
   ) {
     this.recipeForm = this.fb.group({
       title: ['', Validators.required],
       description: ['', Validators.required],
-      steps: this.fb.array([])
+      steps: this.fb.array([]),
+      difficulty: ['', Validators.required],
+      prepTime: ['', Validators.required],
+      cookTime: ['', Validators.required]
+    });
+  }
+
+  ngOnInit(): void {
+    this.TagService.getTagsByType(5).subscribe(data => {
+      this.difficultyTags = data;
+    });
+
+    this.TagService.getTagsByType(4).subscribe(data => {
+      this.cookTimeTags = data;
+    });
+
+    this.TagService.getTagsByType(3).subscribe(data => {
+      this.prepTimeTags = data;
     });
   }
 
@@ -50,7 +72,7 @@ export class CreateRecipeComponent {
     const newStep = this.fb.group({
       description: [''],
       step_number: [this.steps.length + 1],
-      video: [null],
+      file: [""],
       isCollapsed: [false]
     });
     this.cd.detectChanges();
@@ -77,12 +99,22 @@ export class CreateRecipeComponent {
     formData.append('title', this.recipeForm.value.title);
     formData.append('description', this.recipeForm.value.description);
 
+
     this.steps.controls.forEach((step, index) => {
+      console.log(step,index)
       formData.append(`steps[${index}][description]`, step.value.description);
       formData.append(`steps[${index}][step_number]`, step.value.step_number);
-      // Gérer le fichier vidéo si présent
-      if (step.value.video) {
-        formData.append(`steps[${index}][video]`, step.value.video, step.value.video.name);
+
+
+      if (step.value.file) {
+        const fileExtension = step.value.file.url.split('.').pop()?.toLowerCase();
+        if (fileExtension === 'mp4' || fileExtension === 'avi' || fileExtension === 'mov') {
+          formData.append(`steps[${index}][file]`, step.value.file.url);
+        } else if (fileExtension === 'jpg' || fileExtension === 'jpeg' || fileExtension === 'png' || fileExtension === 'gif') {
+          formData.append(`steps[${index}][file]`, step.value.file.url);
+        } else {
+          console.log('Type de fichier non pris en charge:', step.value.file.url);
+        }
       }
     });
 
