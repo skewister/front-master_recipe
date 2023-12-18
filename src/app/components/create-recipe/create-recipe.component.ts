@@ -98,6 +98,9 @@ export class CreateRecipeComponent implements OnInit {
     const formData = new FormData();
     formData.append('title', this.recipeForm.value.title);
     formData.append('description', this.recipeForm.value.description);
+    formData.append('difficulty', this.recipeForm.value.difficulty);
+    formData.append('prep_time', this.recipeForm.value.prepTime);
+    formData.append('cook_time', this.recipeForm.value.cookTime);
 
 
     this.steps.controls.forEach((step, index) => {
