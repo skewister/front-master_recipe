@@ -40,4 +40,12 @@ export class RecipeService {
   addStep(recipeId: number, stepData: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/${recipeId}/steps`, stepData);
   }
+
+  searchIngredients(query: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/ingredients/search?query=${query}`);
+  }
+
+  addIngredientToRecipe(recipeId: number, ingredientData: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/recipes/${recipeId}/ingredients`, ingredientData);
+  }
 }
