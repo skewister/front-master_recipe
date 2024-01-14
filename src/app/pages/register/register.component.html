@@ -1,29 +1,50 @@
-<!-- register.component.html -->
-<div class="register-container">
-  <form (ngSubmit)="onSubmit(registerForm)" #registerForm="ngForm">
-    <div>
-      <label for="name">Nom:</label>
-      <input type="text" id="name" name="name" [(ngModel)]="registerData.name" required>
-    </div>
-    <div>
-      <label for="email">Email:</label>
-      <input type="email" id="email" name="email" [(ngModel)]="registerData.email" required>
-    </div>
-    <div>
-      <label for="password">Mot de passe:</label>
-      <input type="password" id="password" name="password" [(ngModel)]="registerData.password" required>
-    </div>
-    <div>
-      <label for="confirmpassword">Confirmer le mot de passe:</label>
-      <input type="password" id="confirmpassword" name="confirmpassword" [(ngModel)]="registerData.confirmpassword" required>
-    </div>
-    <!-- login.component.html -->
-    <div *ngIf="errorMessage" class="alert alert-danger">
-      {{ errorMessage }}
-    </div>
-    <button type="submit" [disabled]="!registerForm.valid">S'inscrire</button>
-  </form>
+<div class="min-h-screen flex items-center justify-center bg-gray-100">
+  <div class="max-w-md w-full bg-white rounded-lg shadow-md p-8">
+    <form (ngSubmit)="onSubmit(registerForm)" #registerForm="ngForm" class="space-y-6">
+      <div>
+        <label for="name" class="text-sm font-medium text-gray-700">Nom:</label>
+        <input type="text" id="name" name="name" [(ngModel)]="registerData.name" required
+               class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+      </div>
+      <div>
+        <label for="email" class="text-sm font-medium text-gray-700">Email:</label>
+        <input type="email" id="email" name="email" [(ngModel)]="registerData.email" required
+               class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+      </div>
+      <div>
+        <label for="password" class="text-sm font-medium text-gray-700">Mot de passe:</label>
+        <input type="password" id="password" name="password" [(ngModel)]="registerData.password" required
+               class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+      </div>
+      <div>
+        <label for="confirmpassword" class="text-sm font-medium text-gray-700">Confirmer le mot de passe:</label>
+        <input type="password" id="confirmpassword" name="confirmpassword" [(ngModel)]="registerData.confirmpassword" required
+               class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+      </div>
+      <div *ngIf="errorMessage" class="p-4 text-sm text-red-700 bg-red-100 rounded-lg">
+        {{ errorMessage }}
+      </div>
+      <button type="submit" [disabled]="!registerForm.valid"
+              class="w-full text-white bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+        S'inscrire
+      </button>
+      <div class="text-sm font-medium text-gray-500">
+        Vous avez déjà un compte?  <a [routerLink]="['/login']" class="text-blue-700 hover:underline">Se connecter</a>
+      </div>
+      <div class="pt-6 text-center">
+        <button (click)="signInWithGoogle()"
+                class="text-white bg-red-500 hover:bg-red-700 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center">
+          <svg class="w-4 h-4 mr-2 -ml-1" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google"
+               role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
+            <path fill="currentColor"
+                  d="M488 261.8a248 248 0 0 1-86.4
+186.2h-262c-13.3 0-24-10.7-24-24v-100H121.6v-62H115v-85h6.6v-62H24c-13.3 0-24 10.7-24 24v262a24 24 0 0 0 24 24h340a238.8 238.8 0 0 0 124-221.8c0-10-1-19.7-2.2-29H251.6v85H488z">
+            </path>
+          </svg>
+          Se connecter avec Google
+        </button>
+      </div>
+    </form>
 
-  <button (click)="signInWithGoogle()">Se connecter avec Google</button>
-
+  </div>
 </div>

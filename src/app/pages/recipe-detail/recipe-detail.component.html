@@ -1,1 +1,54 @@
-<p>recipe-detail works!</p>
+<div *ngIf="recipe" class="bg-white shadow overflow-hidden sm:rounded-lg">
+
+  <a routerLink="/recipes" class="inline-flex items-center gap-2 text-blue-500 hover:text-blue-700 transition-colors duration-150 ease-in-out">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+    </svg>
+    <span>Recipes</span>
+  </a>
+  <h1 class="text-3xl font-semibold mb-4">{{ recipe.title }}</h1>
+  <div class="border-t border-gray-200">
+    <dl>
+      <div class="bg-white px-4 py-5 sm:px-6">
+        <h2 class="text-lg leading-6 font-medium text-gray-900">Description :</h2>
+        <p class="mt-1 max-w-2xl text-sm text-gray-500">{{ recipe.description }}</p>
+      </div>
+      <div class="bg-gray-50 px-4 py-5 sm:px-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">Ingrédients :</h3>
+        <ul class="mt-2 space-y-2">
+          <li *ngFor="let ingredient of ingredients" class="flex items-center space-x-3">
+            <img class="flex-shrink-0 w-10 h-10 rounded-full" [src]="ingredient.picture" alt="Image de l'ingrédient">
+            <span class="flex-grow font-medium text-gray-900">{{ ingredient.name }}</span>
+            <span class="text-sm text-gray-500">{{ ingredient.quantity }} {{ ingredient.unit }}</span>
+          </li>
+        </ul>
+      </div>
+    </dl>
+      <div class="bg-white px-4 py-5 sm:px-6">
+        <ng-container *ngFor="let step of steps; let i = index">
+          <ng-template [ngIf]="i === currentStepIndex">
+            <div class="mt-2">
+              <h2>Étape {{ step.step_number }} :</h2>
+              <p>{{ step.description }}</p>
+            </div>
+          </ng-template>
+        </ng-container>
+
+        <!-- Boutons de navigation entre les étapes -->
+          <div class="bg-white px-4 py-5 sm:px-6 mt-auto">
+            <div class="flex justify-between">
+              <button type="button" (click)="goToPreviousStep()"
+                      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                      [disabled]="currentStepIndex === 0">
+                Étape Précédente
+              </button>
+              <button type="button" (click)="goToNextStep()"
+                      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                      [disabled]="currentStepIndex === steps.length - 1">
+                Étape Suivante
+              </button>
+            </div>
+        </div>
+      </div>
+  </div>
+</div>

@@ -5,4 +5,5 @@ export interface user {
   bio: string;
   dietary_preferences: string;
   profile_picture: string;
+
 }

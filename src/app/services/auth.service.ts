@@ -6,6 +6,7 @@ import { catchError } from 'rxjs/operators';
 import {API_URL, environment} from "../../environments/environment";
 import {jwtDecode} from "jwt-decode";
 import {Router} from "@angular/router";
+import { user } from '../shared/model/user';
 
 interface DecodedToken {
   exp: number;
@@ -33,6 +34,24 @@ export class AuthService {
 
   register(data: { name: string, email: string, password: string }): Observable<any> {
     return this.http.post(API_URL+'/register', data);
+  }
+  getCurrentUser(): user | null {
+    if (typeof localStorage === 'undefined') {
+      return null; // localStorage is not available
+    }
+
+    try {
+      const userJson = localStorage.getItem('currentUser');
+      return userJson ? JSON.parse(userJson) : null;
+    } catch (error) {
+      console.error('Error reading from localStorage', error);
+      return null;
+    }
+  }
+
+  getCurrentUserId(): number {
+    const user = this.getCurrentUser();
+    return user ? user.id : 0; // Default to 0 or another suitable default value
   }
 
   handleError(error: HttpErrorResponse): string {

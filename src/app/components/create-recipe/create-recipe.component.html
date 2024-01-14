@@ -1,69 +1,158 @@
-<form [formGroup]="recipeForm" (ngSubmit)="onSubmit()" class="space-y-4">
-  <div class="mb-4">
-    <input formControlName="title" placeholder="Titre de la recette" class="p-2 border border-gray-300 rounded w-full">
-    <textarea formControlName="description" placeholder="Description de la recette" class="mt-2 p-2 border border-gray-300 rounded w-full"></textarea>
-  </div>
 
-  <!-- Pour les tags de difficulté -->
-  <h2>Difficulté</h2>
-  <div *ngFor="let tag of difficultyTags">
-    <input type="radio" [value]="tag.id" formControlName="difficulty" name="difficulty">{{ tag.name }}
-  </div>
+<div class="bg-gray-100 container">
+  <div class="max-w-lg mx-auto bg-white p-8">
+<form [formGroup]="recipeForm" (ngSubmit)="onSubmitRecipe()" class="space-y-4">
 
-  <!-- Pour les tags de temps de préparation -->
-  <h2>Temps de préparation</h2>
-  <div *ngFor="let tag of prepTimeTags">
-    <input type="radio" [value]="tag.id" formControlName="prepTime" name="prepTime">{{ tag.name }}
-  </div>
 
-  <!-- Pour les tags de temps de cuisson -->
-  <h2>Temps de cuisson</h2>
-  <div *ngFor="let tag of cookTimeTags">
-    <input type="radio" [value]="tag.id" formControlName="cookTime" name="cookTime">{{ tag.name }}
-  </div>
+  <ng-container *ngIf="currentStep === 1 && prepTimeTags.length>0">
+    <!-- Champs pour titre, description, et tags -->
+    <div class="mb-4">
+      <h1 class="text-3xl font-semibold mb-4 justify-center">Créer votre recette</h1>
+      <span>Titre de la recette</span>
+      <input formControlName="title" placeholder="Titre de la recette" class="p-2 border border-gray-300 rounded w-full mb-4" >
+      <span>Description de la recette</span>
+      <textarea formControlName="description" placeholder="Description de la recette" class="mt-2 p-2 border border-gray-300 rounded w-full"></textarea>
+    </div>
 
-  <!-- Section pour la recherche et l'ajout des ingrédients -->
-  <div class="ingredients-section">
-    <input [formControl]="searchControl" placeholder="Rechercher des ingrédients" class="p-2 border border-gray-300 rounded w-full">
-    <!-- Menu déroulant pour les résultats de recherche (à implémenter) -->
+    <!-- Pour les tags de difficulté -->
+    <h2>Difficulté</h2>
+    <div class="mb-4 flex flex-wrap">
+      <label *ngFor="let tag of difficultyTags">
 
-    <!-- Liste des ingrédients ajoutés -->
-    <div formArrayName="ingredients">
-      <div *ngFor="let ingredientControl of ingredientsControl.controls; let i = index" [formGroupName]="i" class="ingredient-item">
-        <!-- Affichage de l'ingrédient avec champs pour la quantité et l'unité -->
-        <div class="ingredient-info">
-          <span>{{ ingredientControl.value.ingredientName }}</span>
-          <input formControlName="quantity" placeholder="Quantité" class="quantity-input">
-          <select formControlName="unit" class="unit-select">
-            <option value="g">g</option>
-            <option value="mg">mg</option>
-            <option value="kg">kg</option>
-            <option value="ml">ml</option>
-            <option value="l">l</option>
-            <option value="cl">cl</option>
-            <!-- Plus d'options d'unité selon besoin -->
-          </select>
+          <label  class="py-2 px-4 rounded mr-2 mb-2 cursor-pointer border-2" [ngClass]="getTagClasses(tag)">
+        <input type="radio" [value]="tag.id" formControlName="difficulty" name="difficulty" class="hidden" (click)="toggleTag(tag)">
+            {{ tag.name }}
+          </label>
+
+      </label>
+
+    </div>
+
+    <!-- Pour les tags de temps de préparation -->
+    <h2>Temps de préparation</h2>
+    <div class="mb-4 flex flex-wrap">
+    <div *ngFor="let tag of prepTimeTags">
+      <label  class="py-2 px-4 rounded mr-2 mb-2 cursor-pointer border-2" [ngClass]="getTagClasses(tag)">
+      <input type="radio" [value]="tag.id" formControlName="prepTime" name="prepTime" class="hidden" (click)="toggleTag(tag)">{{ tag.name }}
+      </label>
+    </div>
+    </div>
+    <!-- Pour les tags de temps de cuisson -->
+    <h2>Temps de cuisson</h2>
+    <div class="mb-4 flex flex-wrap">
+    <div *ngFor="let tag of cookTimeTags">
+      <label  class="py-2 px-4 rounded mr-2 mb-2 cursor-pointer border-2" [ngClass]="getTagClasses(tag)">
+      <input type="radio" [value]="tag.id" formControlName="cookTime" name="cookTime" class="hidden" (click)="toggleTag(tag)">{{ tag.name }}
+      </label>
+    </div>
+      <input type="file"  (change)="handleImageInput($event)" accept="image"/>
+    </div>
+
+    <!-- Bouton pour aller à la prochaine étape -->
+    <div class="w-full flex justify-end">
+    <button type="button" (click)="nextStep()" class="mt-8"><h2 class="text-xl font-semibold">Vos Ingrédients    ></h2></button>
+    </div>
+
+  </ng-container>
+
+  <ng-container *ngIf="currentStep === 1 && prepTimeTags.length===0">
+    data loading
+  </ng-container>
+
+
+  <!-- Étape 2 : Ingrédients -->
+  <ng-container *ngIf="currentStep === 2">
+    <!-- Interface pour ajouter des ingrédients -->
+    <!-- Section pour la recherche et l'ajout des ingrédients -->
+    <div class="ingredients-section space-y-4">
+      <!-- Champ de recherche des ingrédients -->
+      <div class="relative">
+        <input [formControl]="searchControl" placeholder="Rechercher des ingrédients" class="p-2 border border-gray-300 rounded w-full" (input)="onSearch()" (focus)="onIngredientFieldFocus()">
+        <div class="absolute right-2 top-2">
+          <!-- Icône de recherche, utilisez une icône svg ou une classe Tailwind pour l'afficher -->
         </div>
-        <button type="button" (click)="removeIngredient(i)">Supprimer</button>
+      </div>
+
+      <!-- Liste déroulante des résultats de recherche -->
+      <div class="results-dropdown" *ngIf="ingredientSearchResults.length > 0">
+        <ul class="scrollable-dropdown overflow-auto max-h-60">
+          <li *ngFor="let ingredient of ingredientSearchResults.slice()" (click)="selectIngredient(ingredient)" class="flex items-center p-2 hover:bg-gray-200 cursor-pointer">
+            <img [src]="ingredient.picture" alt="{{ ingredient.name }}" class="ingredient-image h-10 w-10 rounded-full mr-2">
+            <span class="ingredient-name flex-grow">{{ ingredient.name }}</span>
+            <button type="button" class="ml-2 h-6 w-6 rounded-full bg-green-500 text-white flex items-center justify-center">
+              +
+            </button>
+          </li>
+        </ul>
+      </div>
+      <!-- Liste des ingrédients ajoutés -->
+      <div formArrayName="ingredients">
+        <div *ngFor="let ingredientControl of ingredientsControl.controls; let i = index" [formGroupName]="i" class="ingredient-item">
+          <!-- Affichage de l'ingrédient avec champs pour la quantité et l'unité -->
+          <div class="ingredient-info">
+            <img [src]="ingredientControl.value.image" alt="{{ ingredientControl.value.ingredientName }}" class="ingredient-image">
+            <span>{{ ingredientControl.value.ingredientName }}</span>
+            <input formControlName="quantity" placeholder="Quantité" class="quantity-input">
+            <select formControlName="unit" class="unit-select">
+              <option value="g">g</option>
+              <option value="mg">mg</option>
+              <option value="kg">kg</option>
+              <option value="ml">ml</option>
+              <option value="l">l</option>
+              <option value="cl">cl</option>
+              <!-- Plus d'options d'unité selon besoin -->
+            </select>
+          </div>
+
+          <button type="button" (click)="removeIngredient(i)">Supprimer</button>
+        </div>
       </div>
     </div>
-    <button type="button" (click)="addIngredientToRecipe(selectedIngredient)">Ajouter à la recette</button>
-  </div>
 
-<div formArrayName="steps" class="space-y-4">
-    <div *ngFor="let step of steps.controls; let i = index; trackBy: trackByIndex" [formGroupName]="i" class="border border-gray-300 rounded-lg p-4">
-      <div class="step-header cursor-pointer bg-blue-500 text-white p-2 mb-2" (click)="toggleStepCollapse(i)">
-        Étape {{ i + 1 }}
-      </div>
-      <div class="step-content" *ngIf="!step.get('isCollapsed')?.value">
-        <input formControlName="description" placeholder="Description de l'étape" class="p-2 border border-gray-300 rounded w-full">
-        <input formControlName="step_number" [disabled]="true" hidden>
-        <input type="file" (change)="handleFileInput($event, i)" placeholder="Vidéo de l'étape" class="mt-2 p-2 border border-gray-300 rounded w-full">
-        <button type="button" *ngIf="recipeId" (click)="deleteStep(step.value.id)" class="mt-2 bg-red-500 text-white py-2 px-4 rounded">Supprimer cette étape</button>
-      </div>
+    <div class="flex justify-between">
+      <button type="button" (click)="previousStep()" class="bg-red-500 text-white py-2 px-4 rounded">< début</button>
+      <button type="button" (click)="nextStep()" class="bg-green-500 text-white py-2 px-4 rounded">étapes ></button>
     </div>
-    <button type="button" (click)="addStep()" class="bg-green-500 text-white py-2 px-4 rounded">Ajouter une étape</button>
-  </div>
+  </ng-container>
 
-  <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded">Créer la recette</button>
+
+  <ng-container *ngIf="currentStep === 3">
+    <!-- Interface pour ajouter des étapes -->
+    <div formArrayName="steps" class="space-y-4">
+      <div *ngFor="let step of steps.controls; let i = index; trackBy: trackByIndex" [formGroupName]="i" class="border border-gray-300 rounded-lg p-4">
+        <div class="step-header cursor-pointer bg-blue-500 text-white p-2 mb-2" (click)="toggleStepCollapse(i)">
+          Étape {{ i + 1 }}
+        </div>
+        <div class="step-content" *ngIf="!step.get('isCollapsed')?.value">
+          <input formControlName="description" placeholder="Description de l'étape" class="p-2 border border-gray-300 rounded w-full">
+          <input formControlName="step_number" [disabled]="true" hidden>
+          <input type="file" (change)="handleFileInput($event, i)" placeholder="Vidéo de l'étape" class="mt-2 p-2 border border-gray-300 rounded w-full">
+        </div>
+        <!-- Bouton de suppression pour chaque étape -->
+        <button type="button" (click)="removeStepFromForm(i)" class="btn-delete-step">Supprimer cette étape</button>
+      </div>
+      <!-- Bouton pour ajouter une nouvelle étape -->
+      <button type="button" (click)="addStep()" class="bg-green-500 text-white py-2 px-4 rounded">Ajouter une étape</button>
+    </div>
+
+
+    <!-- Boutons pour retour et soumettre la recette -->
+    <button type="button" (click)="previousStep()">Retour</button>
+    <button type="submit" (click)="onSubmit(); submitSteps()">Créer la recette</button>
+  </ng-container>
+
+  <ng-container *ngIf="currentStep === 4">
+    <div class="fixed inset-0 flex items-center justify-center ">
+      <div class="bg-orange-500 p-8 shadow-md rounded-md sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl ">
+        <h1 class="text-2xl font-bold md-4"> Finalisation</h1>
+        <p> {{status}} </p>
+        <button class="mt-4 px-4 py-2 bg-red-600 text-white rounded-md" #homeItem routerLink="/home">Retour à l'écran titre</button>
+      </div>
+
+    </div>
+
+  </ng-container>
+
 </form>
+  </div>
+</div>

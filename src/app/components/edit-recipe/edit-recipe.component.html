@@ -1,0 +1,82 @@
+<form [formGroup]="recipeForm" (ngSubmit)="onSubmitRecipe()" class="space-y-4">
+
+  <!-- Étape 1 : Informations de base et tags -->
+  <ng-container *ngIf="currentStep === 1 && prepTimeTags.length>0">
+    <div class="mb-4">
+      <input formControlName="title" placeholder="Titre de la recette" class="p-2 border border-gray-300 rounded w-full">
+      <textarea formControlName="description" placeholder="Description de la recette" class="mt-2 p-2 border border-gray-300 rounded w-full"></textarea>
+    </div>
+
+    <!-- Tags de difficulté -->
+    <h2>Difficulté</h2>
+    <div *ngFor="let tag of difficultyTags">
+      <input type="radio" [value]="tag.id" formControlName="difficulty">{{ tag.name }}
+    </div>
+
+    <!-- Tags de temps de préparation -->
+    <h2>Temps de préparation</h2>
+    <div *ngFor="let tag of prepTimeTags">
+      <input type="radio" [value]="tag.id" formControlName="prepTime">{{ tag.name }}
+    </div>
+
+    <!-- Tags de temps de cuisson -->
+    <h2>Temps de cuisson</h2>
+    <div *ngFor="let tag of cookTimeTags">
+      <input type="radio" [value]="tag.id" formControlName="cookTime">{{ tag.name }}
+    </div>
+
+    <button type="button" (click)="nextStep()">Continuer</button>
+  </ng-container>
+
+  <!-- Étape 2 : Ingrédients -->
+  <ng-container *ngIf="currentStep === 2">
+    <div class="ingredients-section">
+      <input [formControl]="searchControl" placeholder="Rechercher des ingrédients" class="p-2 border border-gray-300 rounded w-full" (input)="onSearch()">
+
+      <div *ngIf="showDropdown && ingredientSearchResults.length > 0">
+        <ul class="results-dropdown">
+          <li *ngFor="let ingredient of ingredientSearchResults.slice(0, 7)" (click)="selectIngredient(ingredient)">
+            <img [src]="ingredient.picture" alt="{{ ingredient.name }}" class="ingredient-image">
+            <span class="ingredient-name">{{ ingredient.name }}</span>
+          </li>
+        </ul>
+      </div>
+
+      <div formArrayName="ingredients">
+        <div *ngFor="let ingredientControl of ingredientsControl.controls; let i = index" [formGroupName]="i" class="ingredient-item">
+          <div class="ingredient-info">
+            <img [src]="ingredientControl.value.image" alt="{{ ingredientControl.value.ingredientName }}" class="ingredient-image">
+            <span>{{ ingredientControl.value.ingredientName }}</span>
+            <input formControlName="quantity" placeholder="Quantité" class="quantity-input">
+            <select formControlName="unit" class="unit-select">
+              <!-- Options d'unité -->
+            </select>
+          </div>
+          <button type="button" (click)="removeIngredient(i)">Supprimer</button>
+        </div>
+      </div>
+    </div>
+      <button type="button" (click)="previousStep()">Retour</button>
+      <button type="button" (click)="nextStep()">Continuer</button>
+  </ng-container>
+
+  <!-- Étape 3 : Ajout des étapes de la recette -->
+  <ng-container *ngIf="currentStep === 3">
+    <div formArrayName="steps" class="space-y-4">
+      <div *ngFor="let step of steps.controls; let i = index" [formGroupName]="i" class="border border-gray-300 rounded-lg p-4">
+        <div class="step-header cursor-pointer bg-blue-500 text-white p-2 mb-2" (click)="toggleStepCollapse(i)">
+          Étape {{ i + 1 }}
+        </div>
+        <div class="step-content" *ngIf="!step.get('isCollapsed')?.value">
+          <input formControlName="description" placeholder="Description de l'étape" class="p-2 border border-gray-300 rounded w-full">
+          <input type="file" (change)="handleFileInput($event, i)" placeholder="Ajouter une vidéo pour l'étape" class="mt-2 p-2 border border-gray-300 rounded w-full">
+        </div>
+        <button type="button" (click)="removeStepFromForm(i)" class="bg-red-500 text-white py-2 px-4 rounded">Supprimer cette étape</button>
+      </div>
+      <button type="button" (click)="addStep()" class="bg-green-500 text-white py-2 px-4 rounded">Ajouter une étape</button>
+    </div>
+
+    <button type="button" (click)="previousStep()">Retour</button>
+    <button type="submit">Mettre à jour la recette</button>
+  </ng-container>
+</form>

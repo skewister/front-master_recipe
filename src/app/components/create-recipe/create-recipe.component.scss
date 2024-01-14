@@ -1,0 +1,36 @@
+.results-dropdown li {
+  display: flex; /* Ajout de Flexbox */
+  align-items: center; /* Centre les éléments verticalement */
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.ingredient-image {
+  flex-shrink: 0; /* Empêche l'image de se rétrécir */
+  margin-right: 10px; /* Espace entre l'image et le texte */
+  width: 30px; /* ou la taille que vous souhaitez */
+  height: 30px; /* ou la taille que vous souhaitez */
+  object-fit: cover; /* assure que l'image couvre bien la taille définie sans être déformée */
+}
+
+.ingredient-name {
+  flex-grow: 1; /* Permet au texte de prendre l'espace restant */
+  display: block; /* Assure que le texte s'affiche correctement à côté de l'image */
+}
+
+
+.results-dropdown li {
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.results-dropdown li:hover {
+  background-color: #eee;
+}
+
+.scrollable-dropdown {
+  max-height: 200px; /* Ajustez cette valeur en fonction de la taille de vos éléments */
+  overflow-y: auto;
+}
+
+
